@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Kanji Counter</string>
+    <string name="textPlaceholder">Type Chinese or Japanese text here. The number of occurrences of each Kanji/Hanzi in the text will be shown bellow!</string>
+</resources>
