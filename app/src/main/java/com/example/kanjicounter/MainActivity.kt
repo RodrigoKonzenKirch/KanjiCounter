@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppScreen(viewModel: MainActivityViewModel) {
-    var text by remember { mutableStateOf(TextFieldValue("")) }
+    var text by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
     val scroll = rememberScrollState(0)
 
     val charsCountedToUi = viewModel.getCharactersCounted().observeAsState()
