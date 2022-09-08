@@ -1,18 +1,19 @@
 package com.example.kanjicounter
 
 import android.os.Bundle
+import android.text.Layout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,6 +57,15 @@ fun AppScreen(viewModel: MainActivityViewModel) {
         Column {
             TextField(
                 value = text,
+                trailingIcon = {
+                    Icon(Icons.Default.Clear,
+                        contentDescription = "Clear Text",
+                        modifier = Modifier
+                            .clickable{
+                                text = TextFieldValue("")
+                            }
+                    )
+                },
                 onValueChange = { newText ->
                     text = newText
                     viewModel.updateText(newText.text)
