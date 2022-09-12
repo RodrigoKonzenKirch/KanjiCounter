@@ -24,9 +24,7 @@ class MainActivityViewModel: ViewModel() {
     fun charactersCountedUpdate() {
 
         val textNotDuplicated = removeDuplicates(_text.value!!)
-
         val mapOfCharsNumberOfOccurrences = countOccurrencesOfCharInText(textNotDuplicated, _text.value!!)
-
         val orderedMapOfCharsNumberOfOccurrences = mapOfCharsNumberOfOccurrences.entries.sortedByDescending { it.value }.associate { it.toPair() }
 
         var valuesFormattedIntoString = ""

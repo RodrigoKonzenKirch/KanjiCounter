@@ -1,7 +1,6 @@
 package com.example.kanjicounter
 
 import android.os.Bundle
-import android.text.Layout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -48,45 +47,60 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppScreen(viewModel: MainActivityViewModel) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
-    val scroll = rememberScrollState(0)
 
     val charsCountedToUi = viewModel.getCharactersCounted().observeAsState()
 
+    AppScreenContent(
+        textInput = text,
+        textResult = charsCountedToUi ,
+        onClearText = {
+            text = TextFieldValue("")
+            viewModel.updateText("")
+            viewModel.charactersCountedUpdate()
+        },
+        onTextChange = {
+            text = it
+            viewModel.updateText(it.text)
+            viewModel.charactersCountedUpdate()
+        }
+    )
+}
+
+@Composable
+fun AppScreenContent(
+    textInput: TextFieldValue,
+    textResult: State<String?>,
+    onClearText: () -> Unit,
+    onTextChange: (TextFieldValue) -> Unit
+){
+    val scroll = rememberScrollState(0)
+
     Column(modifier = Modifier.padding(8.dp)) {
 
-        Column {
-            TextField(
-                value = text,
-                trailingIcon = {
-                    Icon(Icons.Default.Clear,
-                        contentDescription = "Clear Text",
-                        modifier = Modifier
-                            .clickable{
-                                text = TextFieldValue("")
-                            }
-                    )
-                },
-                onValueChange = { newText ->
-                    text = newText
-                    viewModel.updateText(newText.text)
-                    viewModel.charactersCountedUpdate()
-                },
-                modifier = Modifier
-                    .weight(1F)
-                    .fillMaxSize()
-                    .padding(vertical = 8.dp),
-                placeholder = { Text(stringResource(R.string.textPlaceholder))}
-            )
+        TextField(
+            value = textInput,
+            trailingIcon = {
+                Icon(Icons.Default.Clear,
+                    contentDescription = "Clear Text",
+                    modifier = Modifier.clickable(onClick = onClearText)
+                )
+            },
+            onValueChange = onTextChange,
+            modifier = Modifier
+                .weight(0.7F)
+                .fillMaxSize()
+                .padding(vertical = 8.dp),
+            placeholder = { Text(stringResource(R.string.textPlaceholder))}
+        )
 
-            Text(
-                text = charsCountedToUi.value ?: "",
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1F)
-                    .fillMaxSize()
-                    .verticalScroll(scroll)
-            )
-        }
+        Text(
+            text = textResult.value ?: "",
+            fontSize = 30.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .weight(1F)
+                .fillMaxSize()
+                .verticalScroll(scroll)
+        )
     }
 }
