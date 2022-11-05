@@ -57,12 +57,12 @@ fun AppScreen(viewModel: MainActivityViewModel) {
         onClearText = {
             text = TextFieldValue("")
             viewModel.updateText("")
-            viewModel.charactersCountedUpdate()
+            viewModel.updateCharacters()
         },
         onTextChange = {
             text = it
             viewModel.updateText(it.text)
-            viewModel.charactersCountedUpdate()
+            viewModel.updateCharacters()
         }
     )
 }

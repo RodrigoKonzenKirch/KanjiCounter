@@ -22,7 +22,7 @@ class MainActivityViewModel: ViewModel() {
         return _charactersCounted
     }
 
-    fun charactersCountedUpdate() {
+    fun updateCharacters() {
 
         var charsFromText = removeDuplicates(_text.value!!)
         charsFromText = removeInvalidChars(charsFromText, invalidChars)
