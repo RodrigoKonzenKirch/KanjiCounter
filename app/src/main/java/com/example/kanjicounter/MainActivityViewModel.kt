@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MainActivityViewModel: ViewModel() {
+    private val invalidChars = "１２３４５６７８９０1234567890\n\rあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわゐゔゑをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゃゅょっアイウエオャュョッァィェゥォヵヶカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヰヱヲヰンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴ｛｝{}（）()［］【】[]&,.;:/-+、，゠＝=…‥。「」『』《》〝〟⟨⟩〜：！!？?＿＠＃＄％＆＊・~^ー 　"
     private var _text = MutableLiveData<String>()
     private var _charactersCounted = MutableLiveData<String>()
 
@@ -23,8 +24,10 @@ class MainActivityViewModel: ViewModel() {
 
     fun charactersCountedUpdate() {
 
-        val textNotDuplicated = removeDuplicates(_text.value!!)
-        val mapOfCharsNumberOfOccurrences = countOccurrencesOfCharInText(textNotDuplicated, _text.value!!)
+        var charsFromText = removeDuplicates(_text.value!!)
+        charsFromText = removeInvalidChars(charsFromText, invalidChars)
+
+        val mapOfCharsNumberOfOccurrences = countOccurrencesOfCharInText(charsFromText, _text.value!!)
         val orderedMapOfCharsNumberOfOccurrences = mapOfCharsNumberOfOccurrences.entries.sortedByDescending { it.value }.associate { it.toPair() }
 
         var valuesFormattedIntoString = ""
@@ -53,5 +56,10 @@ class MainActivityViewModel: ViewModel() {
         }
 
         return mapOfCharsNumberOfOccurrences.toSortedMap()
+    }
+
+    private fun removeInvalidChars(setOfChars: MutableSet<Char>, invalidChars: String): MutableSet<Char>{
+        setOfChars.removeAll(invalidChars.asSequence().toSet())
+        return setOfChars
     }
 }
