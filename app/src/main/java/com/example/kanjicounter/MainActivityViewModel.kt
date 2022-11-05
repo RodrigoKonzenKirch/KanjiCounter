@@ -25,17 +25,14 @@ class MainActivityViewModel: ViewModel() {
     fun updateCharacters() {
 
         var charsFromText = removeDuplicates(_text.value!!)
+
         charsFromText = removeInvalidChars(charsFromText, invalidChars)
 
         val mapOfCharsNumberOfOccurrences = countOccurrencesOfCharInText(charsFromText, _text.value!!)
-        val orderedMapOfCharsNumberOfOccurrences = mapOfCharsNumberOfOccurrences.entries.sortedByDescending { it.value }.associate { it.toPair() }
 
-        var valuesFormattedIntoString = ""
-        for (item in orderedMapOfCharsNumberOfOccurrences){
-            valuesFormattedIntoString += "${item.key} ${item.value}\n"
-        }
+        val sortedMapOfCharsNumberOfOccurrences = sortMapOfCharsByDescending(mapOfCharsNumberOfOccurrences)
 
-        _charactersCounted.value = valuesFormattedIntoString
+        _charactersCounted.value = formatCharsForPresentation(sortedMapOfCharsNumberOfOccurrences)
     }
 
     private fun removeDuplicates(text:String): MutableSet<Char>{
@@ -61,5 +58,17 @@ class MainActivityViewModel: ViewModel() {
     private fun removeInvalidChars(setOfChars: MutableSet<Char>, invalidChars: String): MutableSet<Char>{
         setOfChars.removeAll(invalidChars.asSequence().toSet())
         return setOfChars
+    }
+
+    private fun formatCharsForPresentation(orderedMapOfCharsNumberOfOccurrences: Map<Char, Int>): String{
+        var valuesFormattedIntoString = ""
+        for (item in orderedMapOfCharsNumberOfOccurrences){
+            valuesFormattedIntoString += "${item.key} ${item.value}\n"
+        }
+        return valuesFormattedIntoString
+    }
+
+    private fun sortMapOfCharsByDescending(mapOfChars: MutableMap<Char, Int>): Map<Char, Int> {
+        return mapOfChars.entries.sortedByDescending { it.value }.associate { it.toPair() }
     }
 }
