@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MainActivityViewModel: ViewModel() {
-    private val invalidChars = "１２３４５６７８９０1234567890\n\rあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわゐゔゑをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゃゅょっアイウエオャュョッァィェゥォヵヶカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヰヱヲヰンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴ｛｝{}（）()［］【】[]&,.;:/-+、，゠＝=…‥。「」『』《》〝〟⟨⟩〜：！!？?＿＠＃＄％＆＊・~^ー 　"
+    private val invalidChars = "１２３４５６７８９０1234567890\n\rあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわゐゔゑをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゃゅょっアイウエオャュョッァィェゥォヵヶカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヰヱヲヰンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴ｛｝{}（）()［］【】[]&,.;:/-+、，゠＝=…‥。「」『』《》〝〟⟨⟩〜：！!？?＿＠＃＄％%∟°＆＊・•~^ー 　"
     private var _text = MutableLiveData<String>()
     private var _charactersCounted = MutableLiveData<String>()
 
