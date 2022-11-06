@@ -13,4 +13,4 @@ Example with Chinese text:
 
 Input: "我是我，你是谁？"
 
-Output: [我 2], [是 2], [你 1], [谁 1], [，1], [？ 1]
+Output: [我 2], [是 2], [你 1], [谁 1]
