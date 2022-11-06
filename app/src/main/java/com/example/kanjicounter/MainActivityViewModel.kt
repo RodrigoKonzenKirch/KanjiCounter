@@ -9,17 +9,16 @@ class MainActivityViewModel: ViewModel() {
     private var _text = MutableLiveData<String>()
     private var _charactersCounted = MutableLiveData<String>()
 
+    val mCharactersCounted: LiveData<String>
+
     init {
         _text.value = ""
         _charactersCounted.value = ""
+        mCharactersCounted = _charactersCounted
     }
 
     fun updateText(newText: String){
         _text.value = newText
-    }
-
-    fun getCharactersCounted(): LiveData<String> {
-        return _charactersCounted
     }
 
     fun updateCharacters() {

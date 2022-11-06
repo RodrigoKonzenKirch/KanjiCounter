@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 fun AppScreen(viewModel: MainActivityViewModel) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
 
-    val charsCountedToUi = viewModel.getCharactersCounted().observeAsState()
+    val charsCountedToUi = viewModel.mCharactersCounted.observeAsState()
 
     AppScreenContent(
         textInput = text,
