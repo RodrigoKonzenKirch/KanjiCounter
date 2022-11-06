@@ -7,13 +7,13 @@ import androidx.lifecycle.ViewModel
 class MainActivityViewModel: ViewModel() {
     private val invalidChars = "１２３４５６７８９０1234567890\n\rあいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわゐゔゑをんがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽゃゅょっアイウエオャュョッァィェゥォヵヶカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヰヱヲヰンガギグゲゴザジズゼゾダヂヅデドバビブベボパピプペポヴ｛｝{}（）()［］【】[]&,.;:/-+、，゠＝=…‥。「」『』《》〝〟⟨⟩〜：！!？?＿＠＃＄％%∟°＆＊・•~^ー 　"
     private var _text = MutableLiveData<String>()
-    private var _charactersCounted = MutableLiveData<String>()
+    private var _charactersCounted = MutableLiveData<List<CharCounter>>()
 
-    val mCharactersCounted: LiveData<String>
+    val mCharactersCounted: LiveData<List<CharCounter>>
 
     init {
         _text.value = ""
-        _charactersCounted.value = ""
+        _charactersCounted.value = listOf()
         mCharactersCounted = _charactersCounted
     }
 
@@ -31,7 +31,7 @@ class MainActivityViewModel: ViewModel() {
 
         val sortedMapOfCharsNumberOfOccurrences = sortMapOfCharsByDescending(mapOfCharsNumberOfOccurrences)
 
-        _charactersCounted.value = formatCharsForPresentation(sortedMapOfCharsNumberOfOccurrences)
+        _charactersCounted.value = sortedMapOfCharsNumberOfOccurrences
     }
 
     private fun removeDuplicates(text:String): MutableSet<Char>{
@@ -59,15 +59,13 @@ class MainActivityViewModel: ViewModel() {
         return setOfChars
     }
 
-    private fun formatCharsForPresentation(orderedMapOfCharsNumberOfOccurrences: Map<Char, Int>): String{
-        var valuesFormattedIntoString = ""
-        for (item in orderedMapOfCharsNumberOfOccurrences){
-            valuesFormattedIntoString += "${item.key} ${item.value}\n"
-        }
-        return valuesFormattedIntoString
-    }
-
-    private fun sortMapOfCharsByDescending(mapOfChars: MutableMap<Char, Int>): Map<Char, Int> {
-        return mapOfChars.entries.sortedByDescending { it.value }.associate { it.toPair() }
+    private fun sortMapOfCharsByDescending(mapOfChars: MutableMap<Char, Int>): List<CharCounter> {
+        val resultList = mutableListOf<CharCounter>()
+        mapOfChars.entries.sortedByDescending { it.value }.associate { it.toPair() }.forEach{ entry -> resultList.add(
+            CharCounter(entry.key, entry.value)
+        )}
+        return resultList
     }
 }
+
+data class CharCounter(val char: Char, val counter: Int)

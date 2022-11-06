@@ -7,10 +7,10 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -53,28 +53,26 @@ fun AppScreen(viewModel: MainActivityViewModel) {
 
     AppScreenContent(
         textInput = text,
-        textResult = charsCountedToUi ,
+        resultList = charsCountedToUi ,
         onClearText = {
             text = TextFieldValue("")
             viewModel.updateText("")
             viewModel.updateCharacters()
-        },
-        onTextChange = {
-            text = it
-            viewModel.updateText(it.text)
-            viewModel.updateCharacters()
         }
-    )
+    ) {
+        text = it
+        viewModel.updateText(it.text)
+        viewModel.updateCharacters()
+    }
 }
 
 @Composable
 fun AppScreenContent(
     textInput: TextFieldValue,
-    textResult: State<String?>,
+    resultList: State<List<CharCounter>?>,
     onClearText: () -> Unit,
     onTextChange: (TextFieldValue) -> Unit
 ){
-    val scroll = rememberScrollState(0)
 
     Column(modifier = Modifier.padding(8.dp)) {
 
@@ -94,17 +92,26 @@ fun AppScreenContent(
             placeholder = { Text(stringResource(R.string.textPlaceholder))}
         )
 
-        SelectionContainer(
+        Surface(
             modifier = Modifier
                 .weight(1F)
                 .fillMaxSize()
-        ){
-            Text(
-                text = textResult.value ?: "",
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.verticalScroll(scroll)
-            )
+        ) {
+            resultList.value?.let { CharsCounterList(it) }
+
+        }
+    }
+}
+
+@Composable
+fun CharsCounterList(resultList: List<CharCounter>){
+    LazyColumn(modifier = Modifier.fillMaxSize()){
+        items(resultList) { row ->
+            Text(text = "${row.char} : ${row.counter}",
+            fontSize = 30.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth())
+
         }
     }
 }
