@@ -19,6 +19,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,10 +53,13 @@ fun AppScreen(viewModel: MainActivityViewModel) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
 
     val charsCountedToUi = viewModel.mCharactersCounted.observeAsState()
-
+    val notoFontFamily = FontFamily(
+        Font(R.font.notoserifsclight)
+    )
     AppScreenContent(
         textInput = text,
         resultList = charsCountedToUi ,
+        customFontFamily = notoFontFamily,
         onClearText = {
             text = TextFieldValue("")
             viewModel.updateText("")
@@ -70,14 +76,15 @@ fun AppScreen(viewModel: MainActivityViewModel) {
 fun AppScreenContent(
     textInput: TextFieldValue,
     resultList: State<List<CharCounter>?>,
+    customFontFamily: FontFamily,
     onClearText: () -> Unit,
     onTextChange: (TextFieldValue) -> Unit
 ){
-
     Column(modifier = Modifier.padding(8.dp)) {
 
         TextField(
             value = textInput,
+            textStyle = TextStyle(fontSize = 16.sp, fontFamily = customFontFamily),
             trailingIcon = {
                 Icon(Icons.Default.Clear,
                     contentDescription = "Clear Text",
@@ -97,20 +104,23 @@ fun AppScreenContent(
                 .weight(1F)
                 .fillMaxSize()
         ) {
-            resultList.value?.let { CharsCounterList(it) }
+            resultList.value?.let { CharsCounterList(it, customFontFamily) }
 
         }
     }
 }
 
 @Composable
-fun CharsCounterList(resultList: List<CharCounter>){
+fun CharsCounterList(resultList: List<CharCounter>, customFontFamily: FontFamily){
     LazyColumn(modifier = Modifier.fillMaxSize()){
         items(resultList) { row ->
-            Text(text = "${row.char} : ${row.counter}",
-            fontSize = 30.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth())
+            Text(
+                text = "${row.char} : ${row.counter}",
+                fontFamily = customFontFamily,
+                fontSize = 30.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
 
         }
     }
