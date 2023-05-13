@@ -1,5 +1,3 @@
-import java.net.InetAddress.getByName
-
 plugins {
     id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
@@ -40,11 +38,8 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.1.1"
     }
-    packagingOptions {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+
+    namespace = "com.example.kanjicounter"
     tasks.withType<Test> {
         useJUnitPlatform()
     }
