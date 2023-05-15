@@ -11,14 +11,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -56,20 +69,34 @@ fun AppScreen(viewModel: MainActivityViewModel) {
     val notoFontFamily = FontFamily(
         Font(R.font.notoserifsclight)
     )
+    val charToBeHighlighted = viewModel.charToBeHighlighted.observeAsState()
+    val highlightedText = viewModel.textHighlighted.observeAsState()
     AppScreenContent(
         textInput = text,
         resultList = charsCountedToUi ,
         customFontFamily = notoFontFamily,
+        charToBeHighlighted = charToBeHighlighted,
+        highlightedText = highlightedText,
         onClearText = {
             text = TextFieldValue("")
             viewModel.updateText("")
             viewModel.updateCharacters()
+        },
+        onTextChange = {
+            text = it
+            viewModel.updateText(it.text)
+            viewModel.updateCharacters()
+        },
+        onClickListItem = {
+            if (it == viewModel.charToBeHighlighted.value){
+                viewModel.setCharToBeHighlighted(' ')
+                viewModel.updateTextHighlight()
+            } else {
+                viewModel.setCharToBeHighlighted(it)
+                viewModel.updateTextHighlight()
+            }
         }
-    ) {
-        text = it
-        viewModel.updateText(it.text)
-        viewModel.updateCharacters()
-    }
+    )
 }
 
 @Composable
@@ -77,14 +104,59 @@ fun AppScreenContent(
     textInput: TextFieldValue,
     resultList: State<List<CharCounter>?>,
     customFontFamily: FontFamily,
+    charToBeHighlighted: State<Char?>,
+    highlightedText: State<AnnotatedString?>,
     onClearText: () -> Unit,
-    onTextChange: (TextFieldValue) -> Unit
+    onTextChange: (TextFieldValue) -> Unit,
+    onClickListItem: (Char) -> Unit
 ){
     Column(modifier = Modifier.padding(8.dp)) {
 
+        Surface(
+            modifier = Modifier
+                .weight(0.7F)
+                .fillMaxSize()
+                .padding(vertical = 8.dp)
+        ) {
+            EditHighlightText(
+                textInput = textInput,
+                customFontFamily = customFontFamily,
+                charToBeHighlighted = charToBeHighlighted,
+                highlightedText = highlightedText,
+                onClearText = onClearText,
+                onTextChange = onTextChange
+            )
+        }
+
+        Surface(
+            modifier = Modifier
+                .weight(1F)
+                .fillMaxSize()
+        ) {
+            resultList.value?.let { CharsCounterList(it, customFontFamily, onClickListItem) }
+
+        }
+    }
+}
+
+@Composable
+fun EditHighlightText(
+    textInput: TextFieldValue,
+    customFontFamily: FontFamily,
+    charToBeHighlighted: State<Char?>,
+    highlightedText: State<AnnotatedString?>,
+    onClearText: () -> Unit,
+    onTextChange: (TextFieldValue) -> Unit
+
+){
+    val textFontSize = 18.sp
+    if (charToBeHighlighted.value == ' ' || charToBeHighlighted.value == null){
         TextField(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 8.dp),
             value = textInput,
-            textStyle = TextStyle(fontSize = 16.sp, fontFamily = customFontFamily),
+            textStyle = TextStyle(fontSize = textFontSize, fontFamily = customFontFamily),
             trailingIcon = {
                 Icon(Icons.Default.Clear,
                     contentDescription = "Clear Text",
@@ -92,36 +164,42 @@ fun AppScreenContent(
                 )
             },
             onValueChange = onTextChange,
-            modifier = Modifier
-                .weight(0.7F)
-                .fillMaxSize()
-                .padding(vertical = 8.dp),
+
             placeholder = { Text(stringResource(R.string.textPlaceholder))}
         )
 
-        Surface(
+    } else{
+        Text(
             modifier = Modifier
-                .weight(1F)
                 .fillMaxSize()
-        ) {
-            resultList.value?.let { CharsCounterList(it, customFontFamily) }
-
-        }
+                .padding(8.dp)
+                .verticalScroll(rememberScrollState()),
+            text = highlightedText.value?:AnnotatedString(""),
+            fontSize = textFontSize,
+            fontFamily = customFontFamily
+        )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CharsCounterList(resultList: List<CharCounter>, customFontFamily: FontFamily){
+fun CharsCounterList(resultList: List<CharCounter>, customFontFamily: FontFamily, onClickListItem: (Char) -> Unit){
     LazyColumn(modifier = Modifier.fillMaxSize()){
         items(resultList) { row ->
-            Text(
-                text = "${row.char} : ${row.counter}",
-                fontFamily = customFontFamily,
-                fontSize = 30.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-
+            Card(
+                modifier = Modifier
+                    .padding(vertical = 4.dp, horizontal = 4.dp),
+                onClick = {onClickListItem(row.char)},
+                elevation = 8.dp
+            ) {
+                Text(
+                    text = "${row.char} : ${row.counter}",
+                    fontFamily = customFontFamily,
+                    fontSize = 30.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
