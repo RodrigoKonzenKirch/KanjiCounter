@@ -4,13 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
@@ -30,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -65,7 +67,7 @@ class MainActivity : ComponentActivity() {
 fun AppScreen(viewModel: MainActivityViewModel) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
 
-    val charsCountedToUi = viewModel.mCharactersCounted.observeAsState()
+    val charsCountedToUi = viewModel.charactersCounted.observeAsState()
     val notoFontFamily = FontFamily(
         Font(R.font.notoserifsclight)
     )
@@ -184,13 +186,23 @@ fun EditHighlightText(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CharsCounterList(resultList: List<CharCounter>, customFontFamily: FontFamily, onClickListItem: (Char) -> Unit){
+    var selectedIndex by rememberSaveable { mutableStateOf(-1) }
+
     LazyColumn(modifier = Modifier.fillMaxSize()){
-        items(resultList) { row ->
+        itemsIndexed(resultList) { index, row ->
             Card(
                 modifier = Modifier
-                    .padding(vertical = 4.dp, horizontal = 4.dp),
-                onClick = {onClickListItem(row.char)},
-                elevation = 8.dp
+                    .padding(4.dp),
+                onClick = {
+                    onClickListItem(row.char)
+                    selectedIndex = if (selectedIndex == index){
+                        -1
+                    } else{
+                        index
+                    }
+                          },
+                elevation = 8.dp,
+                border = if (index == selectedIndex){ BorderStroke(2.dp, Color.Blue) } else { null }
             ) {
                 Text(
                     text = "${row.char} : ${row.counter}",

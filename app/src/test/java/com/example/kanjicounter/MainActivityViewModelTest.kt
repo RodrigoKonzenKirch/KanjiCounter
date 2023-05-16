@@ -20,7 +20,7 @@ internal class MainActivityViewModelTest {
 
         viewModel.updateText(input)
         viewModel.updateCharacters()
-        assertEquals(expected, viewModel.mCharactersCounted.value)
+        assertEquals(expected, viewModel.charactersCounted.value)
 
     }
 }
