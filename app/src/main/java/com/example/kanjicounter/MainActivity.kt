@@ -112,13 +112,14 @@ fun AppScreenContent(
     onTextChange: (TextFieldValue) -> Unit,
     onClickListItem: (Char) -> Unit
 ){
-    Column(modifier = Modifier.padding(8.dp)) {
+    val defaultPadding = 8.dp
+    Column {
 
         Surface(
             modifier = Modifier
                 .weight(0.7F)
                 .fillMaxSize()
-                .padding(vertical = 8.dp)
+                .padding(vertical = defaultPadding)
         ) {
             EditHighlightText(
                 textInput = textInput,
@@ -134,6 +135,7 @@ fun AppScreenContent(
             modifier = Modifier
                 .weight(1F)
                 .fillMaxSize()
+                .padding(defaultPadding)
         ) {
             resultList.value?.let { CharsCounterList(it, customFontFamily, onClickListItem) }
 
@@ -155,8 +157,7 @@ fun EditHighlightText(
     if (charToBeHighlighted.value == ' ' || charToBeHighlighted.value == null){
         TextField(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 8.dp),
+                .fillMaxSize(),
             value = textInput,
             textStyle = TextStyle(fontSize = textFontSize, fontFamily = customFontFamily),
             trailingIcon = {
@@ -174,7 +175,7 @@ fun EditHighlightText(
         Text(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
             text = highlightedText.value?:AnnotatedString(""),
             fontSize = textFontSize,
@@ -201,7 +202,7 @@ fun CharsCounterList(resultList: List<CharCounter>, customFontFamily: FontFamily
                         index
                     }
                           },
-                elevation = 8.dp,
+                elevation = 4.dp,
                 border = if (index == selectedIndex){ BorderStroke(2.dp, Color.Blue) } else { null }
             ) {
                 Text(

@@ -113,7 +113,7 @@ class MainActivityViewModel: ViewModel() {
         // Generate list containing indexes to be highlighted
         val listOfSpanStyles = mutableListOf<AnnotatedString.Range<SpanStyle>>()
         indexesCharInText.forEach{
-            listOfSpanStyles.add(AnnotatedString.Range(SpanStyle(background = Color.Gray), it, it + 1))
+            listOfSpanStyles.add(AnnotatedString.Range(SpanStyle(color = Color.Blue, background = Color.LightGray), it, it + 1))
         }
         return AnnotatedString(text, spanStyles = listOfSpanStyles)
     }
