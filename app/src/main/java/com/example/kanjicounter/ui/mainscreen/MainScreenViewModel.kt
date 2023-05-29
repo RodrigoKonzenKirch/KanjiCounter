@@ -1,4 +1,4 @@
-package com.example.kanjicounter
+package com.example.kanjicounter.ui.mainscreen
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
