@@ -48,12 +48,14 @@ fun AppScreen(viewModel: MainActivityViewModel) {
     )
     val charToBeHighlighted = viewModel.charToBeHighlighted.observeAsState()
     val highlightedText = viewModel.textHighlighted.observeAsState()
+    val selectedListIndex = viewModel.selectedListIndex.observeAsState()
     AppScreenContent(
         textInput = text,
         resultList = charsCountedToUi ,
         customFontFamily = notoFontFamily,
         charToBeHighlighted = charToBeHighlighted,
         highlightedText = highlightedText,
+        selectedListIndex = selectedListIndex,
         onClearText = {
             text = TextFieldValue("")
             viewModel.updateText("")
@@ -64,14 +66,21 @@ fun AppScreen(viewModel: MainActivityViewModel) {
             viewModel.updateText(it.text)
             viewModel.updateCharacters()
         },
-        onClickListItem = {
-            if (it == viewModel.charToBeHighlighted.value){
+        onClickListItem = { char, int ->
+            if (char == viewModel.charToBeHighlighted.value){
                 viewModel.setCharToBeHighlighted(' ')
                 viewModel.updateTextHighlight()
+                viewModel.updateSelectedListIndex(-1)
             } else {
-                viewModel.setCharToBeHighlighted(it)
+                viewModel.setCharToBeHighlighted(char)
                 viewModel.updateTextHighlight()
+                viewModel.updateSelectedListIndex(int)
             }
+        },
+        onTapHighlightedText = {
+            viewModel.setCharToBeHighlighted(' ')
+            viewModel.updateTextHighlight()
+            viewModel.updateSelectedListIndex(-1)
         }
     )
 }
@@ -83,9 +92,11 @@ fun AppScreenContent(
     customFontFamily: FontFamily,
     charToBeHighlighted: State<Char?>,
     highlightedText: State<AnnotatedString?>,
+    selectedListIndex: State<Int?>,
     onClearText: () -> Unit,
     onTextChange: (TextFieldValue) -> Unit,
-    onClickListItem: (Char) -> Unit
+    onClickListItem: (Char, Int) -> Unit,
+    onTapHighlightedText: () -> Unit
 ){
     val defaultPadding = 8.dp
     Column {
@@ -102,7 +113,8 @@ fun AppScreenContent(
                 charToBeHighlighted = charToBeHighlighted,
                 highlightedText = highlightedText,
                 onClearText = onClearText,
-                onTextChange = onTextChange
+                onTextChange = onTextChange,
+                onTapHighlightedText = onTapHighlightedText
             )
         }
 
@@ -112,7 +124,7 @@ fun AppScreenContent(
                 .fillMaxSize()
                 .padding(defaultPadding)
         ) {
-            resultList.value?.let { CharsCounterList(it, customFontFamily, onClickListItem) }
+            resultList.value?.let { CharsCounterList(selectedListIndex, it, customFontFamily, onClickListItem) }
 
         }
     }
@@ -125,7 +137,8 @@ fun EditHighlightText(
     charToBeHighlighted: State<Char?>,
     highlightedText: State<AnnotatedString?>,
     onClearText: () -> Unit,
-    onTextChange: (TextFieldValue) -> Unit
+    onTextChange: (TextFieldValue) -> Unit,
+    onTapHighlightedText: () -> Unit
 
 ){
     val textFontSize = 18.sp
@@ -152,7 +165,8 @@ fun EditHighlightText(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .clickable { onTapHighlightedText() },
             text = highlightedText.value?: AnnotatedString(""),
             fontSize = textFontSize,
             fontFamily = customFontFamily
@@ -162,8 +176,14 @@ fun EditHighlightText(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun CharsCounterList(resultList: List<CharCounter>, customFontFamily: FontFamily, onClickListItem: (Char) -> Unit){
-    var selectedIndex by rememberSaveable { mutableStateOf(-1) }
+fun CharsCounterList(
+    selectedListIndex: State<Int?>,
+    resultList: List<CharCounter>,
+    customFontFamily: FontFamily,
+    onClickListItem: (Char, Int) -> Unit
+)
+{
+
 
     LazyColumn(modifier = Modifier.fillMaxSize()){
         itemsIndexed(resultList) { index, row ->
@@ -171,15 +191,18 @@ fun CharsCounterList(resultList: List<CharCounter>, customFontFamily: FontFamily
                 modifier = Modifier
                     .padding(4.dp),
                 onClick = {
-                    onClickListItem(row.char)
-                    selectedIndex = if (selectedIndex == index){
-                        -1
-                    } else{
-                        index
-                    }
+                    onClickListItem(
+                        row.char,
+                        if (selectedListIndex.value == index){
+                            -1
+                        } else{
+                            index
+                        }
+                    )
+
                 },
                 elevation = 4.dp,
-                border = if (index == selectedIndex){ BorderStroke(2.dp, Color.Blue) } else { null }
+                border = if (index == selectedListIndex.value){ BorderStroke(2.dp, Color.Blue) } else { null }
             ) {
                 Text(
                     text = "${row.char} : ${row.counter}",

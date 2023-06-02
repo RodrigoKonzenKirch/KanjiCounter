@@ -18,6 +18,9 @@ class MainActivityViewModel: ViewModel() {
         private set
 
     var textHighlighted = MutableLiveData<AnnotatedString>()
+    private var _selectedListIndex = MutableLiveData<Int>()
+    var selectedListIndex = _selectedListIndex
+        private set
 
 
     init {
@@ -26,6 +29,11 @@ class MainActivityViewModel: ViewModel() {
         _charactersCounted.value = listOf()
         charactersCounted = _charactersCounted
         textHighlighted.value = highlightCharOnText(_text.value, _charToBeHighlighted.value)
+        _selectedListIndex.value = -1
+    }
+
+    fun updateSelectedListIndex(value: Int){
+        _selectedListIndex.value = value
     }
 
     fun setCharToBeHighlighted(char: Char){
