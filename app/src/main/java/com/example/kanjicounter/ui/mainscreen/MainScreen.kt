@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.example.kanjicounter.R
 
 @Composable
-fun AppScreen(viewModel: MainActivityViewModel) {
+fun AppScreen(viewModel: MainScreenViewModel) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
 
     val charsCountedToUi = viewModel.charactersCounted.observeAsState()
