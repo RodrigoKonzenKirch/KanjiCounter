@@ -5,6 +5,7 @@ This app is useful for people who study Japanese or Chinese. The student can eas
 
 When a text is inputted, the app will show how many times each character appears in the text.
 The list of characters is shown ordered by the most common characters.
+Also, when a character is selected in the list, all occurrences of it are highlighted in the text above.
 
 Example: 
 Inputting "Hello" will generate an output like: [l 2], [H 1], [e 1], [o 1]
